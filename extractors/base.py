@@ -25,7 +25,7 @@ class BaseExtractor:
         pass
 
     @abstractmethod
-    def _build_transaction():
+    def _build_transaction(self, match_data: dict, lines: List[str], i: int):
         pass
 
     def extract_transactions(

@@ -31,17 +31,21 @@ class RevolutExtractor(BaseExtractor):
         return lines.index("Date Description Money out Money in Balance")
     
     def _build_transaction(self, match_data, lines, i):
+        money_in = None
+        money_out = None
+
+        if i + 1 < len(lines) and lines[i + 1].startswith("From"):
+            money_in = match_data["money"]
+            consumed = 2
+        else:
+            money_out = match_data["money"]
+            consumed = 1
+
         tx = Transaction(
             date=match_data["date"],
             description=match_data["description"],
-            money_in=None,
-            money_out=None,
+            money_in=money_in,
+            money_out=money_out,
             balance=match_data["balance"]
         )
-
-        if i < len(lines) and lines[i + 1].startswith("From"):
-            tx.money_in = match_data["money"]
-            return tx, 2
-        else:
-            tx.money_out = match_data["money"]
-            return tx, 1
+        return tx, consumed
